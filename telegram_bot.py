@@ -17,7 +17,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         antwort = client.chat.completions.create(
-            model="google/gemma-2-9b-it:free",
+            model="mistralai/mistral-7b-instruct:free",
             messages=[{"role": "system", "content": SYSTEM}, {"role": "user", "content": update.message.text}]
         )
         await update.message.reply_text(antwort.choices[0].message.content)
