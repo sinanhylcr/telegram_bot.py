@@ -1,7 +1,14 @@
 import os
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 import google.generativeai as genai
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+class HealthHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"OK")
 genai.configure(api_key=os.environ["GEMINI_KEY"])
 TOKEN = os.environ["BOT_TOKEN"]
 SYSTEM = "Du bist ein hilfreicher KI-Assistent. Du antwortest auf Deutsch, bist freundlich und direkt."
@@ -14,11 +21,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(antwort.text)
     except Exception as e:
         await update.message.reply_text(f"❌ Fehler: {str(e)}")
-def main():
+def run_bot():
     app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     print("🤖 Bot läuft...")
     app.run_polling()
-if __name__ == "__main__":
-    main()
+def run_http():
+    server = HTTPServer(("0.0.0.0", int(os.environ.get("PORT", 10000))), HealthHandler)
+    server.serve_forever()
+threading.Thread(target=run_http, daemon=True).start()
+run_bot()
