@@ -17,7 +17,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         antwort = client.chat.completions.create(
-            model="mistralai/mistral-7b-instruct:free",
+            model="meta-llama/llama-3.3-70b-instruct:free",
             messages=[{"role": "system", "content": SYSTEM}, {"role": "user", "content": update.message.text}]
         )
         await update.message.reply_text(antwort.choices[0].message.content)
