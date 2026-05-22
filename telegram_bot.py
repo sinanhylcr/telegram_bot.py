@@ -17,8 +17,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         antwort = client.chat.completions.create(
-            model="meta-llama/llama-3.3-70b-instruct:free",
-            messages=[{"role": "system", "content": SYSTEM}, {"role": "user", "content": update.message.text}]
+            model="openrouter/free",
+            messages=[{"role": "system", "content": SYSTEM}, {"role": "user", "content": update.message.text}],
+            max_tokens=4096
         )
         await update.message.reply_text(antwort.choices[0].message.content)
     except Exception as e:
